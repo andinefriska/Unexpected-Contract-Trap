@@ -1,92 +1,106 @@
-# Unexpected Contract Trap
+# UnexpectedContractTrap
 
-A Solidity smart contract trap designed to detect and alert on interactions with unexpected or unknown contracts. This trap is part of the Drosera security framework and implements the `ITrap` interface for monitoring blockchain activity.
+A Drosera security trap contract designed to detect and respond to unexpected contract interactions from non-whitelisted addresses.
 
 ## Overview
 
-The `UnexpectedContractTrap` monitors contract interactions and triggers alerts when a wallet or system interacts with contracts that are not in its predefined whitelist of known, trusted contracts. This provides an early warning system for potentially malicious or unintended contract interactions.
+The `UnexpectedContractTrap` is a security monitoring contract that implements the `ITrap` interface from the Drosera security framework. It monitors for contract interactions and triggers alerts when non-whitelisted addresses attempt to interact with monitored systems.
+
+## Features
+
+- **Address Whitelisting**: Maintains a hardcoded list of trusted addresses
+- **Real-time Monitoring**: Continuously monitors for unexpected contract interactions
+- **Automated Response**: Triggers security responses when suspicious activity is detected
+- **Block Number Tracking**: Records the exact block number when suspicious activity occurs
 
 ## Use Cases
 
-### 1. **Wallet Security Monitoring**
-- **Scenario**: Monitor a personal or institutional wallet for interactions with unknown contracts
-- **Benefit**: Prevents accidental interactions with malicious contracts, rug pulls, or honeypot tokens
-- **Implementation**: The trap maintains a whitelist of trusted contracts and alerts when the wallet interacts with any contract not on this list
+### 1. DeFi Protocol Security
+Monitor your DeFi protocol for unauthorized contract interactions:
+- **Scenario**: Protect a DEX or lending protocol from malicious bots or unknown contracts
+- **Benefit**: Automatically detect when untrusted contracts attempt to interact with your protocol
+- **Response**: Trigger emergency pauses, rate limiting, or admin notifications
 
-### 2. **DeFi Protocol Security**
-- **Scenario**: DeFi protocols monitoring their users' interactions with external contracts
-- **Benefit**: Early detection of users potentially falling victim to scams or interacting with malicious dApps
-- **Implementation**: Protocols can integrate this trap to monitor their users and provide warnings about risky interactions
+### 2. Smart Contract Access Control
+Implement an additional layer of access control for sensitive contract functions:
+- **Scenario**: Monitor critical admin functions or high-value operations
+- **Benefit**: Detect when non-authorized addresses attempt to call sensitive functions
+- **Response**: Alert administrators or automatically revoke permissions
 
-### 3. **Enterprise Blockchain Security**
-- **Scenario**: Corporate blockchain deployments monitoring employee wallet activities
-- **Benefit**: Ensures compliance with company policies about which contracts employees can interact with
-- **Implementation**: IT departments can use this trap to enforce contract interaction policies and maintain security standards
+### 3. MEV Protection
+Protect against unexpected MEV (Maximal Extractable Value) attacks:
+- **Scenario**: Monitor for sandwich attacks or front-running attempts
+- **Benefit**: Identify when unknown contracts try to exploit your transactions
+- **Response**: Implement protective measures or transaction delays
 
-### 4. **Multi-Signature Wallet Protection**
-- **Scenario**: Multi-sig wallets monitoring proposed transactions for unknown contract interactions
-- **Benefit**: Additional layer of security before executing transactions, allowing signers to review unknown contracts
-- **Implementation**: Integration with multi-sig workflows to flag transactions involving unknown contracts for additional review
+### 4. Treasury Security
+Monitor treasury or vault contracts for unauthorized access attempts:
+- **Scenario**: Protect high-value asset storage contracts
+- **Benefit**: Detect when non-whitelisted addresses attempt to interact with treasury functions
+- **Response**: Freeze assets, alert security teams, or initiate emergency procedures
 
-### 5. **Automated Security Systems**
-- **Scenario**: Integration with automated security responses and incident management systems
-- **Benefit**: Real-time alerts and potential automatic protective actions when suspicious activity is detected
-- **Implementation**: Connect to alerting systems, pause mechanisms, or other automated security responses
+### 5. Governance Protection
+Secure governance systems from manipulation attempts:
+- **Scenario**: Monitor voting contracts or proposal systems
+- **Benefit**: Detect when unknown contracts attempt to manipulate governance processes
+- **Response**: Invalidate suspicious votes or pause governance functions
 
-### 6. **Compliance and Audit Trail**
-- **Scenario**: Organizations requiring detailed audit trails of all contract interactions
-- **Benefit**: Maintains comprehensive logs of all contract interactions and flags for compliance review
-- **Implementation**: Regulatory compliance systems can use this trap to ensure all interactions are with approved contracts
+### 6. Bridge Security
+Monitor cross-chain bridge contracts for suspicious activity:
+- **Scenario**: Protect bridge contracts from unauthorized withdrawal attempts
+- **Benefit**: Detect when non-whitelisted contracts attempt bridge operations
+- **Response**: Pause bridge operations or require additional verification
 
-### 7. **DEX and Trading Security**
-- **Scenario**: Monitoring trading activities for interactions with potentially malicious token contracts
-- **Benefit**: Protection against fake tokens, rug pulls, and other trading-related scams
-- **Implementation**: Trading platforms can integrate this trap to warn users about unknown token contracts
+### 7. Token Contract Monitoring
+Monitor token contracts for unexpected interactions:
+- **Scenario**: Protect against flash loan attacks or unusual trading patterns
+- **Benefit**: Identify when unknown contracts interact with your token
+- **Response**: Implement trading restrictions or notify token holders
 
-### 8. **Smart Contract Firewall**
-- **Scenario**: Acting as a firewall layer for smart contract ecosystems
-- **Benefit**: Prevents interactions with blacklisted or unknown contracts at the protocol level
-- **Implementation**: Other contracts can query this trap before allowing external contract calls
+### 8. Staking Pool Security
+Monitor staking pools for unauthorized access:
+- **Scenario**: Protect validator rewards and staked assets
+- **Benefit**: Detect when non-authorized contracts attempt to claim rewards
+- **Response**: Freeze reward distribution or require manual verification
 
-### 9. **Incident Response and Forensics**
-- **Scenario**: Post-incident analysis to understand how malicious contracts were accessed
-- **Benefit**: Helps trace the timeline and method of security breaches involving unknown contracts
-- **Implementation**: Security teams can use historical data from this trap for forensic analysis
+## Contract Structure
 
-### 10. **Educational and Testing Environments**
-- **Scenario**: Blockchain education platforms monitoring student interactions
-- **Benefit**: Ensures students only interact with approved educational contracts and prevents accidents
-- **Implementation**: Educational platforms can use this trap to create safe learning environments
+### Constants
+- `YOUR_WALLET`: The monitored wallet address (replace with actual address)
+- `WHITELIST1-3`: Trusted addresses that are allowed to interact without triggering alerts
 
-## How It Works
+### Functions
 
-### Data Collection (`collect` function)
-- Maintains a list of known, trusted contract addresses
-- Returns the current state of known contracts and the calling wallet address
-- In production, this would likely read from on-chain storage or event logs
+#### `collect()`
+Returns the monitored wallet address for the Drosera system to track.
 
-### Threat Detection (`shouldRespond` function)
-- Compares new contract interactions against the whitelist of known contracts
-- Triggers an alert if an unknown contract interaction is detected
-- Returns detailed information about the detected threat including:
-  - The wallet address involved
-  - The unknown contract address
-  - A descriptive alert message
+#### `shouldRespond(bytes[] calldata data)`
+Evaluates whether to trigger a security response based on:
+- Checks if the interacting address is in the whitelist
+- Returns `true` with address and block number if response is needed
+- Returns `false` if the interaction is from a trusted address
 
+## Configuration
 
+Before deploying, update these constants:
 
-## Configuration and Customization
+```solidity
+address constant YOUR_WALLET = 0x1111111111111111111111111111111111111111; // Replace with target address
+address constant WHITELIST1 = 0x0000000000000000000000000000000000000001; // Replace with trusted address
+address constant WHITELIST2 = 0x0000000000000000000000000000000000000002; // Replace with trusted address  
+address constant WHITELIST3 = 0x0000000000000000000000000000000000000003; // Replace with trusted address
+```
 
-To adapt this trap for specific use cases:
+## Integration
 
-1. **Update Known Contracts List**: Modify the hardcoded addresses in the `collect()` function to match your trusted contracts
-2. **Dynamic Whitelist Management**: Implement functions to add/remove contracts from the whitelist
-3. **Severity Levels**: Add different alert levels based on contract risk assessment
-4. **Integration Points**: Connect to external alerting systems, logging frameworks, or automated response systems
+1. Deploy the contract with updated addresses
+2. Register with the Drosera security system
+3. Configure response actions (alerts, pauses, etc.)
+4. Monitor dashboard for security events
 
 ## Security Considerations
 
-- **Whitelist Management**: Ensure the whitelist is properly maintained and updated
-- **False Positives**: Consider legitimate new contract deployments that might trigger false alerts
-- **Gas Costs**: Monitor gas costs for frequent whitelist checks
-- **Access Control**: Implement proper access controls for whitelist management functions
+- **Whitelist Management**: Carefully vet all whitelisted addresses
+- **Regular Updates**: Periodically review and update the whitelist
+- **Response Testing**: Test security responses in non-production environments
+- **Monitoring**: Actively monitor for false positives and adjust accordingly
