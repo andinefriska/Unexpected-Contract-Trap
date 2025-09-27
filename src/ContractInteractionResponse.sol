@@ -11,10 +11,10 @@ contract ContractInteractionResponse {
     function execute(bytes calldata payload) external {
         require(msg.sender == owner, "Not authorized");
 
-        (address wallet, uint256 blockNumber) = abi.decode(payload, (address, uint256));
+        address wallet = abi.decode(payload, (address));
 
-        emit TrapTriggered(wallet, blockNumber);
+        emit TrapTriggered(wallet);
     }
 
-    event TrapTriggered(address indexed wallet, uint256 blockNumber);
+    event TrapTriggered(address indexed wallet);
 }
