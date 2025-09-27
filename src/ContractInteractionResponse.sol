@@ -8,19 +8,13 @@ contract ContractInteractionResponse {
         owner = msg.sender;
     }
 
-    function executeTrap(bool shouldTrigger, bytes memory responseData) external {
+    function execute(bytes calldata payload) external {
         require(msg.sender == owner, "Not authorized");
 
-        if (shouldTrigger) {
-            (address wallet, address suspiciousContract, string memory message) =
-                abi.decode(responseData, (address, address, string));
+        (address wallet, uint256 blockNumber) = abi.decode(payload, (address, uint256));
 
-            emit TrapTriggered(wallet, suspiciousContract, block.timestamp, message);
-        } else {
-            emit NormalInteraction(msg.sender, block.timestamp);
-        }
+        emit TrapTriggered(wallet, blockNumber);
     }
 
-    event TrapTriggered(address indexed wallet, address indexed suspiciousContract, uint256 timestamp, string message);
-    event NormalInteraction(address indexed caller, uint256 timestamp);
+    event TrapTriggered(address indexed wallet, uint256 blockNumber);
 }
