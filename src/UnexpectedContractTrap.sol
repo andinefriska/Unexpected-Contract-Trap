@@ -27,7 +27,7 @@ contract UnexpectedContractTrap is ITrap {
         );
 
         if (!isWhitelisted) {
-            return (true, abi.encode(wallet, block.number));
+            return (true, abi.encode(wallet));
         }
 
         return (false, "");
