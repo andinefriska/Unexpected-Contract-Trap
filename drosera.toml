@@ -7,7 +7,7 @@ drosera_address = "0x91cB447BaFc6e0EA0F4Fe056F5a9b1F14bb06e5D"
 
 [traps.mytrap]
 path = "out/UnexpectedContractTrap.sol/UnexpectedContractTrap.json"
-response_contract = "0xE6f127840FEc7e2a59F1d06E2683710D21C955a6"
+response_contract = "0x9552e16534956f2adf6c85b8a70c988d4e4939ec"
 response_function = "execute(bytes)"
 cooldown_period_blocks = 33
 min_number_of_operators = 1
