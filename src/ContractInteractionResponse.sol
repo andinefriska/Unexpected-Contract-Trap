@@ -1,20 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity ^0.8.20;
 
 contract ContractInteractionResponse {
-    address public immutable owner;
+    address public owner;
+    mapping(address => bool) public operators;
+
+    event TrapTriggered(address indexed wallet, uint256 blockNumber, address indexed caller);
 
     constructor() {
         owner = msg.sender;
     }
 
-    function execute(bytes calldata payload) external {
-        require(msg.sender == owner, "Not authorized");
-
-        address wallet = abi.decode(payload, (address));
-
-        emit TrapTriggered(wallet);
+    modifier onlyOwner() { 
+        require(msg.sender == owner, "Not authorized"); 
+        _; 
     }
 
-    event TrapTriggered(address indexed wallet);
+    function setOperator(address op, bool ok) external onlyOwner {
+        operators[op] = ok;
+    }
+
+    function execute(bytes calldata payload) external {
+        require(operators[msg.sender], "Not authorized");
+        (address wallet, uint256 blockNumber) = abi.decode(payload, (address, uint256));
+        emit TrapTriggered(wallet, blockNumber, msg.sender);
+    }
 }
